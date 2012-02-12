@@ -1,6 +1,4 @@
-#!/usr/bin/php -dphar.readonly=0
 <?php
-Phar::interceptFileFuncs();
 
 /**
  * to.phar
@@ -24,11 +22,6 @@ Phar::interceptFileFuncs();
  * @author Nick Rawe
  */
 
-set_exception_handler(function ($e) {
-    echo "Fatal Error: an exception was encountered. Details {$e->getMessage()}\n\n";
-    exit(-1);
-});
-
 //
 //  Startup Checks
 //
@@ -44,6 +37,7 @@ if (version_compare($phpVersion, "5.3.0") < 0)
 {
     throw new Exception("your version of PHP ($phpVersion) is not supported");
 }
+unset($phpVersion);
 
 if ($argc < 2)
 {
@@ -59,7 +53,8 @@ Options:
     -c, --compression   The level of compression to be applied to the archive (none|bzip|tar)
     -e, --encryption    Encryption to be applied to the archive (none|MD5|SHA1|SHA256|SHA512|OPENSSL)
     -k, --keyfile       If using -e OPENSSL, a private key file must be specified,
-    -f, --filelist      Comma-Seperated list of files to be added to the archive
+    -f, --filelist      Comma-Seperated list of files to be added to the archive,
+    -a, --alias         Internal File Alias
 
 Licence:
     to.phar is released under the MIT licence, a copy of which should have been included with this program.
@@ -79,10 +74,17 @@ $cmd->addPair("c", "compression", true);
 $cmd->addPair("e", "encryption", true);
 $cmd->addPair("k", "keyfile", true);
 $cmd->addPair("f", "filelist", true);
+$cmd->addPair("a", "alias", true);
 $cmd->match();
 
 $output  = $cmd->getArg("o");
-$archive = new Phar($output);
+if (file_exists($output))
+{
+    unlink($output);
+}
+
+$alias   = ($cmd->getArg("a") === null ? $cmd->getArg("a") : pathinfo($output, PATHINFO_FILENAME));
+$archive = new Phar($output, 0, $alias);
 $archive->startBuffering();
 
 //
@@ -92,7 +94,15 @@ $archive->startBuffering();
 $stub = $cmd->getArg("s");
 if ($stub && file_exists($stub))
 {
-    $archive->setStub(file_get_contents($stub));
+    $stubText = file_get_contents($stub);
+    if (is_null($stubText) || empty($stubText))
+    {
+        echo "Warning: the stub file requested is not valid\n";         
+    }
+    else
+    {
+        $archive->setStub($stubText);
+    }
 }
 elseif ($stub && !file_exists($stub))
 {
@@ -171,7 +181,8 @@ else
 {
     foreach (explode(",", $files) as $file)
     {
-        if (!file_exists($file))
+        $file = trim($file);
+        if (empty($file) || !file_exists($file))
         {
             echo "Warning: file '$file' does not exist\n";
             continue;
@@ -181,6 +192,4 @@ else
 }
 
 $archive->stopBuffering();
-
-__HALT_COMPILER();
 ?>
