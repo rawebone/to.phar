@@ -34,6 +34,10 @@ PHP projects, which seems like an awful waste of time to repeat constantly for
 something which should be relatively straightforward. Further, I wanted a 
 compilation step which could be embedded in Makefiles or build scripts.
 
+There are other methods of creating Phar files. There's [Phar-util](https://github.com/koto/phar-util)
+for example, or from PHP5.3 the 'phar' commandline utility but these are either
+too much, or about as pleasurable as dancing barefoot on glass.
+
 Project Status & Building
 -------------------------
 
