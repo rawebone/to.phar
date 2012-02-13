@@ -33,12 +33,13 @@ set_error_handler(function ($id, $msg, $file, $line, $context) {
 
 try
 {
-    Phar::mapPhar();
-    require_once "phar://to.phar/to.phar.php";    
+    Phar::mapPhar("to.phar");
+    require_once "phar://to.phar/lib/ToPhar/CommandLine.php";
+    require_once "phar://to.phar/to.phar.php";
 }
 catch (\PharException $e)
 {
-    "to.phar cannot continue as an exception occured while loading. Message: " . $e->getMessage();
+    "to.phar cannot continue as an exception occured while loading. Message: {$e->getMessage()}";
 }
 
 __HALT_COMPILER();

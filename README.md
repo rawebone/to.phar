@@ -37,12 +37,13 @@ compilation step which could be embedded in Makefiles or build scripts.
 Project Status & Building
 -------------------------
 
-The project is currently suffering from a problem self compiling, but this shouldn't
-take too long to resolve.
+The project is self hosting, i.e. you can compile this from source using itself. Of
+course, typing out a lot of commands to build and test it doesn't at all appeal
+so I have created an ant build script to handle this.
 
 To make your own copy from source, do the following:
 
-    cd ./src
-    chmod +x to.phar.php
-    php to.phar.php -o ../builds/to.phar -s stub.php -a to.phar -f to.phar.php,lib/ToPhar/CommandLine.php
-    chmod +x ../builds/to.phar
+    ant make
+
+If you do want to get hands on with the command line, you can use the build
+script to get the commands to be run. It's all laid out for you.

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="ToPhar" default="make" basedir="./src/">
+    <description>
+        ToPhar automated build script
+    </description>
+    
+    <!-- use ant tobin -Dbin_path=x to set you bin path -->
+    <property name="bin_path" value="" />
+    
+    <!-- Make the application -->
+    <target name="make">
+        <exec executable="php" failonerror="true">
+            <arg value="to.phar.php" />
+            <arg value="-o to.phar" />
+            <arg value="-s stub.php" />
+            <arg value="-f to.phar.php,lib/ToPhar/CommandLine.php" />
+        </exec>
+        <move file="to.phar" tofile="../builds/to.phar" overwrite="true" />
+    </target>
+    
+    <!-- Make this executable from the terminal -->
+    <target name="tobin" depends="make">
+        <delete file="${bin_path}/to.phar" />
+        <copy file="../builds/to.phar" tofile="${bin_path}/to.phar" />
+        <chmod file="${bin_path}/to.phar" perm="+x" />
+    </target>
+</project>

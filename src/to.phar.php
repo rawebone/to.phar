@@ -64,7 +64,10 @@ HELP;
     exit(0);
 }
 
-require_once "lib/ToPhar/CommandLine.php";
+if (!class_exists("lib/ToPhar/CommandLine.php"))
+{
+    require_once "lib/ToPhar/CommandLine.php";
+}
 
 //  Process Command Line
 $cmd = new \ToPhar\CommandLine();
@@ -77,7 +80,7 @@ $cmd->addPair("f", "filelist", true);
 $cmd->addPair("a", "alias", true);
 $cmd->match();
 
-$output  = $cmd->getArg("o");
+$output = trim($cmd->getArg("o"));
 if (file_exists($output))
 {
     unlink($output);
@@ -91,7 +94,7 @@ $archive->startBuffering();
 //  Stub
 //
 
-$stub = $cmd->getArg("s");
+$stub = trim($cmd->getArg("s"));
 if ($stub && file_exists($stub))
 {
     $stubText = file_get_contents($stub);
@@ -187,7 +190,7 @@ else
             echo "Warning: file '$file' does not exist\n";
             continue;
         }
-        $archive->addFile($file);
+        $archive[$file] = file_get_contents($file);
     }
 }
 
